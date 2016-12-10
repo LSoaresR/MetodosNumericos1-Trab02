@@ -253,14 +253,51 @@ int main(int argc, char *argv[])
 {
   try
   {
-    Matrix M = Matrix(2,2);
+    bool verif = true;
+    Metodos metod = Metodos();
+    int op;
 
-    M(1,1) = 1;
-    M(1,2) = 2;
-    M(2,1) = 3;
-    M(2,2) = 4;
+    while(verif){
+        system("clear");
+        cout << "----------------------- SISTEMAS DE EQUAÇÕES -----------------------" << endl;
+        cout << "-Cálculo de deslocamentos e amplitudes de deslocamentos de pêndulos-" << endl;
+        cout << "\nDigite o número correspondente a opção desejada:" << endl;
+        cout << "1. Resolver Sistema de Equações pelo método de Cramer;" << endl;
+        cout << "2. Resolver Sistema de Equações pelo método de Gauss;" << endl;
+        cout << "3. Resolver Sistema de Equações pelo método de Gauss-Jordan;" << endl;
+        cout << "4. Calibrar Sistema com os valores dados abaixo e resolver por Gauss e Gauss-Jordan:" << endl;
+        cout << "5. Comparar resolução de Sistema de Equações pelo método de Cramer, Gauss e Gauss-Jordan;" << endl;
+        cout << "6. Sair." << endl;
+        cin >> op;
 
-    M.Print();
+        switch(op){
+            case 1:
+                metod.receberDados();
+                metod.quadroRespostaCramer();
+                break;
+            case 2:
+                metod.receberDados();
+                metod.quadroRespostaGauss();
+                break;
+            case 3:
+                metod.receberDados();
+                metod.quadroRespostaGaussJordan();
+                break;
+            case 4:
+                metod.quadroRespostaCalibrado();
+                break;
+            case 5:
+                metod.receberDados();
+                metod.quadroRespostaComparativo();
+                break;
+            case 6:
+                verif = false;
+                break;
+            default:
+                cout << "Opção não existente";
+                break;
+        }
+    }
   }
   catch (Exception err)
   {
