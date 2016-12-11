@@ -1,4 +1,5 @@
-
+#ifndef MATRIX
+#define MATRIX
 
 /*
 A simple matrix class
@@ -488,3 +489,5 @@ private:
   int cols;
   double** p;     // pointer to a matrix with doubles
 };
+
+#endif //MATRIX

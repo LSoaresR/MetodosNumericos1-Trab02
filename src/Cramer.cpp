@@ -1,169 +1,98 @@
-#include <cstdio>
-#include <cstdlib>
+#ifndef CRAMER
+#define CRAMER
+
+#include "Matrix.cpp"
+#include "Dados.cpp"
+
 #include <iostream>
+#include <vector>
 
-using namespace std;
 
-int n = 0;
-double** squareMatrixAllocate(int dimensions)
-{
-    double **matrix = (double**)malloc(dimensions * sizeof(double*));
-
-    for(int i = 0;i < dimensions;i++)
-    {
-        matrix[i] = (double*)malloc(dimensions * sizeof(double));
-    }
-
-    return matrix;
-}
-
-double calcularDeterminante(double **M) {
-	double det = M[0][0];	
-	for( int  i = 1; i < n ; i++) {
-		det = det * M[i][i];
-	}
-	return det;
-}
-
-double **MatrizO(double **M) {
-
-	double** matrix = squareMatrixAllocate(n);
-    for(int i = 0;i < n;i++) {
-    	for(int j =0;j < n; j++){
-        	matrix[i][j] = M[i][j];
-   		}
-	 }
-	
-
-    return matrix;
-}
-
-double **calcularGauss(double **M) {
-	double** matriz = squareMatrixAllocate(n);
-	
-	double matrix[n][n];
-	
-	for(int i = 0 ; i < n; i++) {
-		for(int j = 0; j < n;j++) {
-			matrix[i][j] = M[i][j];
-		}
-	}
-	
-	int i = 0;
-	int j = 0;
-	double pivo = 0;
-	double linha = 0;
-	double w = 0;
-		while(j != n) {	
-		pivo = matrix[i][j];
-		for(int k = i; k < n; k++) {
-			linha = matrix[k+1][j];
-			w = linha/pivo; //Wa,b
-			//modificar a linha completa			
-			for(int l = 0; l < n; l++) {				
-				matrix[k+1][l] = matrix[k+1][l] - w*matrix[i][l];
-			} 
-		}	
-		i++; j++;	
-	}
-	
-	for(int i = 0 ; i < n; i++) {
-		for(int j = 0; j < n;j++) {
-			matriz[i][j] = matrix[i][j];
-		}
-	}	
-	return matriz;
-}
-
-int main() {		
-	cout << "Entre com o tamanho da matriz ";
-	cin >> n;
-	double **matriz = squareMatrixAllocate(n);
-	double **matrizO = squareMatrixAllocate(n);
-	double matrix[n][n];
-	
-	double v[n]; //vetor com valores de b
-	double d[n]; // vetor com soluções x
-	
-	//Preencher matrix(entrada de dados)
-	for(int i = 0 ; i < n; i++) {
-		for(int j = 0; j < n;j++) {
-			cout << "Entre com a posição A[" << i << "][" << j <<"] :"<< endl;
-			cin >> matrix[i][j];
-		}
-	}
-	
-	//matriz original
-	for(int i = 0 ; i < n; i++) {
-		for(int j = 0; j < n;j++) {
-			matrizO[i][j] = matrix[i][j];
-		}
-	}
-	
-	cout << "\nVALORES DE V";
-	for(int i = 0; i < n;i++) {
-		cout << "Entre com v[" << i << "] :" <<endl;
-		cin >> v[i];
-	}
-	
-	cout << "\nMATRIZ SEM GAUSS"<< endl;
-	for(int i = 0 ; i < n; i++) {
-		cout << endl;
-		for(int j = 0; j < n;j++) {
-			cout << " " << matrix[i][j];
-		}
-	}
-	
-
-	//Construir matriz de Gauss
-
-	
-	//preencher matriz automatica
-	
-	for(int i = 0 ; i < n; i++) {
-		for(int j = 0; j < n;j++) {
-			matriz[i][j] = matrix[i][j];
-		}
-	}
-	matriz = calcularGauss(matriz);
-	//Mostrar Matriz
-	cout << "\nMATRIZ APOS GAUSS" << endl;
-	for(int i = 0 ; i < n; i++) {
-		cout << endl;
-		for(int j = 0; j < n;j++) {
-			cout << " " << matriz[i][j];
-		}
-	}
-	
-	
-	
-	//Calcular Determinante
-
-	
-	double det_C = calcularDeterminante(matriz) ;
-	
-	//Regra de Cramer
-	for(int  i = 0; i < n; i++) {
-		matriz = MatrizO(matrizO);
-		for(int k = 0; k < n; k++) {
-			matriz[k][i] = v[k];
-		}
-		cout << "\nMATRIZ Iteração: "<< i << endl;
-		for(int i = 0 ; i < n; i++) {
-			cout << endl;
-			for(int j = 0; j < n;j++) {
-				cout << " " << matriz[i][j];
-			}
-		}
-		matriz = calcularGauss(matriz);
-		cout << endl <<calcularDeterminante(matriz) << endl;;
-		d[i] = (calcularDeterminante(matriz))/det_C;
+class Cramer {
+	public:
 		
-	}
-	
-	cout << "\nValores de D: \n";
-	for( int i = 0; i < n; i++) {
-		cout << d[i] << endl;
-	}
-	return 0;
-}
+		Cramer();
+		//passando a Matriz 'C' e o vetor resultado 'v'
+			Cramer(const Matrix& a, vector<double> v, int n) {
+			
+			vector<Matrix> m;
+			double d[n];
+			double det = Det(a);
+			this->determinantes.push_back(det);
+			double det_aux = 0;
+		
+			for(int j = 1; j <= n; j++) {
+				Matrix aux = a;
+				for(int k = 1; k <= n ; k++) {
+					aux(k,j) = v[k-1];									
+				}
+				
+				this->mat.push_back(aux);
+
+				//agora esse vetor iteração vai ser armazenado pra mostrar depois cada ietreção da determinante, que vai ter tamanho n
+				det_aux = Det(aux);
+				this->determinantes.push_back(det_aux);
+				d[j-1] = (det_aux)/(det);
+				this->solucao.push_back(d[j-1]);
+								
+	        } 
+				
+	}				
+		
+		double Det(const Matrix& a)
+		{
+		  double d = 0;    // value of the determinant
+		  int rows = a.GetRows();
+		  int cols = a.GetRows();
+		
+		  if (rows == cols)
+		  {
+		    // this is a square matrix
+		    if (rows == 1)
+		    {
+		      // this is a 1 x 1 matrix
+		      d = a.get(1, 1);
+		    }
+		    else if (rows == 2)
+		    {
+		      // this is a 2 x 2 matrix
+		      // the determinant of [a11,a12;a21,a22] is det = a11*a22-a21*a12
+		      d = a.get(1, 1) * a.get(2, 2) - a.get(2, 1) * a.get(1, 2);
+		    }
+		    else
+		    {
+		      // this is a matrix of 3 x 3 or larger
+		      for (int c = 1; c <= cols; c++)
+		      {
+		        Matrix M = a.Minor(1, c);
+		        //d += pow(-1, 1+c) * a(1, c) * Det(M);
+		        d += (c%2 + c%2 - 1) * a.get(1, c) * Det(M); // faster than with pow()
+		      }
+		    }
+		  }
+		  else
+		  {
+		    throw Exception("Matrix must be square");
+		  }
+		  return d;
+		}
+		
+		vector<Matrix> getMatrix() {
+			return mat;
+		}
+		
+		double getDeterminantes(int i) {
+			return determinantes[i];
+		}
+		
+		double getSolucao(int i) {
+			return solucao[i];
+		}
+		
+		private:
+			vector<Matrix> mat;
+			vector<double> determinantes;
+			vector<double> solucao;
+};
+
+#endif //CRAMER
